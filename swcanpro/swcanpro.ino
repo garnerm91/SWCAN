@@ -1,3 +1,11 @@
+/*
+ ___ ___   _____ __    _  _ __  _ _____ _ _     __ ___  __  _  _____ __  _  
+| __| \ \_/ | __| _\  | || |  \| |_   _| | |   |  | _ \/__\| |/ | __|  \| | 
+| _|| |> , <| _|| v | | \/ | | ' | | | | | |_  | -| v | \/ |   <| _|| | ' | 
+|_| |_/_/ \_|___|__/   \__/|_|\__| |_| |_|___| |__|_|_\\__/|_|\_|___|_|\__| 
+2025
+Example usage of SWCAN.
+*/
 #include <SPI.h>
 #include <mcp2515.h>
 
@@ -67,19 +75,60 @@ void loop() {
       checkForCommand();
       Serial.println("MSG: Transmitting data...");
 
-      // Example data to send
-        canMsg2.can_id  = 0x108;
+      //turns it on
+      canMsg2.can_id  = 0x90028040 | CAN_EFF_FLAG; 
+  canMsg2.can_dlc = 6;
+  canMsg2.data[0] = 0x09;
+  canMsg2.data[1] = 0x09;
+  canMsg2.data[2] = 0x80;
+  canMsg2.data[3] = 0xff;
+  canMsg2.data[4] = 0x50;
+  canMsg2.data[5] = 0x0c;
+  mcp2515.sendMessage(&canMsg2);
+  mcp2515.setNormalMode();
+  delay(200);
+      // speed
+  canMsg2.can_id  = 0x8c050040 | CAN_EFF_FLAG; 
   canMsg2.can_dlc = 8;
   canMsg2.data[0] = 0x00;
-  canMsg2.data[1] = 0x00;
+  canMsg2.data[1] = 0x01;
+  canMsg2.data[2] = 0x20;
+  canMsg2.data[3] = 0x03;
+  canMsg2.data[4] = 0xa9;
+  canMsg2.data[5] = 0x00;
+  canMsg2.data[6] = 0x00;
+  canMsg2.data[7] = 0x00;
+  mcp2515.sendMessage(&canMsg2);
+  mcp2515.setNormalMode();
+
+      // Fuel
+  canMsg2.can_id  = 0x9004C040 | CAN_EFF_FLAG; 
+  canMsg2.can_dlc = 8;
+  canMsg2.data[0] = 0x08;
+  canMsg2.data[1] = 0x8C;
   canMsg2.data[2] = 0x00;
   canMsg2.data[3] = 0x00;
   canMsg2.data[4] = 0x00;
   canMsg2.data[5] = 0x00;
   canMsg2.data[6] = 0x00;
-  canMsg2.data[7] = 0x1E;
-    mcp2515.sendMessage(&canMsg2);
+  canMsg2.data[7] = 0x00;
+  mcp2515.sendMessage(&canMsg2);
   mcp2515.setNormalMode();
+
+  //keep alive?
+  canMsg2.can_id  = 0x621 | CAN_EFF_FLAG; 
+  canMsg2.can_dlc = 8;
+  canMsg2.data[0] = 0x00;
+  canMsg2.data[1] = 0x7f;
+  canMsg2.data[2] = 0x00;
+  canMsg2.data[3] = 0x00;
+  canMsg2.data[4] = 0x00;
+  canMsg2.data[5] = 0x00;
+  canMsg2.data[6] = 0x00;
+  canMsg2.data[7] = 0x00;
+  mcp2515.sendMessage(&canMsg2);
+  mcp2515.setNormalMode();
+
       currentCommand = STANDBY; // Exit TX mode at the end
       break;
         case IDN:
